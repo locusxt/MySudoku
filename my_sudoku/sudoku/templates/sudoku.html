@@ -6,7 +6,7 @@
 <script src="/static/sudoku.js"></script>
 <script type="text/javascript">
 	//var question="1.......2.9.4...5...6...7...5.9.3.......7.......85..4.7.....6...3...9.8...2.....1";
-	var level = "easy";
+	var level = "hard";
 	var question = sudoku.generate(level);
 	var choosed_cell_id = -1;
 	var current_sudoku = new Array();
@@ -19,6 +19,8 @@
 	var complete_num = 0;
 	var second = 0;
 	var timer;
+	var custom = 0;
+	var use_solve = 0;
 
 	function X(id){
 		return Math.floor(id/9);
@@ -70,6 +72,7 @@
 
 	function find_all_conflicts(){
 		conflict_num = 0;
+		$('.conflict').removeClass('conflict');
 		for (var i = 0; i < 81; ++i){
 			conflict_num += find_conflict(i, true);
 		}
@@ -190,6 +193,75 @@
 			});
 		}
 	}
+
+	function new_game(l){
+		use_solve = 0;
+		custom = 0;
+		level = l;
+		question = sudoku.generate(level);
+		draw_9x9();
+		set_9x9(question);
+		$('#level').html(level);
+
+		$(".input").attr({
+			"readonly":"readonly"
+		});
+		second = 0;
+		timer = setInterval(function(){
+			++second;
+			$('#minute').html(Math.floor(second / 60));
+			$('#second').html(second % 60);
+		}, 1000);
+
+	}
+
+	function solve_game(){
+		use_solve = 1;
+		if (custom == 1){
+			cf_num = find_all_conflicts();
+			if (cf_num != 0){
+				alert("数独存在冲突。");
+				return;
+			}
+			question = "";
+			for (var i = 0; i < 81; ++i){
+				val = $('#C' + i).val();
+				if (val >= 1 && val <= 9)
+					question += val;
+				else
+					question += ".";
+			}
+		}
+		//console.log(question);
+		res = sudoku.solve(question);
+		for (var i = 0; i < 81; ++i){
+			if (question.substr(i, 1) == "."){
+				$('#C' + i).val(parseInt(res.substr(i, 1)));
+				current_sudoku[X(i)][Y(i)] = parseInt(res.substr(i, 1));
+			}
+		}
+		find_all_conflicts();
+	}
+
+	function custom_game(){
+		custom = 1;
+		use_solve = 1;
+		question = ".................................................................................";
+		level = "custom";
+		draw_9x9();
+		set_9x9(question);
+		$('#level').html(level);
+
+		$(".input").attr({
+			"readonly":"readonly"
+		});
+		second = 0;
+		timer = setInterval(function(){
+			++second;
+			$('#minute').html(Math.floor(second / 60));
+			$('#second').html(second % 60);
+		}, 1000);
+	}
 </script>
 
 <style type="text/css"><!--
@@ -249,8 +321,10 @@
 							<table class="table">
 								<tbody>
 									<tr>
-										<td class='cell3 input_btn' style='text-align:center' onclick='find_all_conflicts();'>显示所有冲突位置</td>
+										<td class='cell3 input_btn' style='text-align:center' onclick='find_all_conflicts();'>显示所有冲突</td>
 										<td class='cell3 input_btn' style='text-align:center' onclick='clear_sudoku();'>清空</td>
+										<td class='cell3 input_btn' style='text-align:center' data-toggle="modal" data-target="#myModal">新游戏</td>
+										<td class='cell3 input_btn' style='text-align:center' onclick='solve_game();'>求解</td>
 									</tr>
 								</tbody>
 							</table>
@@ -261,6 +335,32 @@
 			</div>
 		</div>
 	</div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">新游戏</h4>
+      </div>
+      <div class="modal-body" id="myModalBody">
+        <p>是否开始新的游戏？</p>
+        <p>请选择难度：</p>
+        <button onclick="new_game('easy');" type="button" class="btn btn-primary" data-dismiss="modal">简单</button>
+        <button onclick="new_game('medium');" type="button" class="btn btn-primary" data-dismiss="modal">中等</button>
+        <button onclick="new_game('hard');" type="button" class="btn btn-primary" data-dismiss="modal">困难</button>
+        <button onclick="new_game('insane');" type="button" class="btn btn-primary" data-dismiss="modal">极难</button>
+        <button onclick="new_game('inhuman');" type="button" class="btn btn-primary" data-dismiss="modal">极限</button>
+        <button onclick="custom_game();" type="button" class="btn btn-primary" data-dismiss="modal">自定义</button>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script type="text/javascript">

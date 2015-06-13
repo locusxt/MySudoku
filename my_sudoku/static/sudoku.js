@@ -17,7 +17,7 @@
     var SQUARE_UNITS_MAP = null;    // Squares -> units map
     var SQUARE_PEERS_MAP = null;    // Squares -> peers map
     
-    var MIN_GIVENS = 17;            // Minimum number of givens 
+    var MIN_GIVENS = 0;            // Minimum number of givens 
     var NR_SQUARES = 81;            // Number of squares
     
     // Define difficulties by how many squares are given to the player in a new
