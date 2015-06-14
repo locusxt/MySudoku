@@ -6,4 +6,4 @@ class GameLog(models.Model):
 	level = models.CharField(max_length = 10)
 	player = models.CharField(max_length = 64)
 	cost_time = models.IntegerField()
-	date = models.DateTimeField(auto_now_add = True)
+	date = models.DateTimeField(auto_now_add=True)
