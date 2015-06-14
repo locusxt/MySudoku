@@ -21,5 +21,5 @@ from django.conf import settings
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^static/(?P<path>.*)$','django.views.static.serve', {'document_root':settings.STATICFILES_DIRS, 'show_indexes': True}),
-    url(r'^sudoku/', include("sudoku.urls",namespace='sudoku', app_name='sudoku')),
+    url(r'^', include("sudoku.urls",namespace='sudoku', app_name='sudoku')),
 ]

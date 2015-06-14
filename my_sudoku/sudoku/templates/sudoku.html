@@ -79,6 +79,27 @@
 		return conflict_num;
 	}
 
+	function post_game_log(){
+		data_send = {};
+		data_send['player'] = $('#player_name').val();
+		data_send['time'] = second;
+		data_send['level'] = level;
+		data_send['question'] = question;
+		$.ajax({
+		  type: 'POST',
+		  url: "ajax/add_game_log/",
+		  data: JSON.stringify (data_send), // or JSON.stringify ({name: 'jonas'}),
+		  complete: function(d) { 
+				//d = eval("("+d.responseText+")"); 
+				//data_rec['modules'] = d['modules']; 
+				//tmpl_render_html('#module_tmpl', '#main', data_rec);
+				//$(':radio').radiocheck();
+		  },
+		  contentType: "application/json",
+		  dataType: 'text'
+		});
+	}
+
 	function update_complete_num(){
 		complete_num = 0;
 		for (var i = 0; i < 9; ++i){
@@ -90,7 +111,11 @@
 		if (complete_num == 81){
 			cf_num = find_all_conflicts();
 			if (cf_num == 0){
-				alert('complete!');
+				clearInterval(timer);
+			}
+			if (cf_num == 0 && custom == 0){
+				use_solve = 1;
+				$('#myModal2').modal();
 			}
 		}
 
@@ -207,6 +232,7 @@
 			"readonly":"readonly"
 		});
 		second = 0;
+		clearInterval(timer);
 		timer = setInterval(function(){
 			++second;
 			$('#minute').html(Math.floor(second / 60));
@@ -256,6 +282,7 @@
 			"readonly":"readonly"
 		});
 		second = 0;
+		clearInterval(timer);
 		timer = setInterval(function(){
 			++second;
 			$('#minute').html(Math.floor(second / 60));
@@ -363,6 +390,30 @@
   </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModal2Label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModal2Label">新游戏</h4>
+      </div>
+      <div class="modal-body" id="myModal2Body">
+        <p>恭喜你完成了数独</p>
+        <p>
+        	请输入尊姓大名：
+        	<input id="player_name" class="form-control" type="text" value="anonymous" class="input-large">
+        </p>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+		<button type="button" class="btn btn-primary" onclick="post_game_log();" data-dismiss="modal">确认</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type="text/javascript">
 	draw_9x9();
 	set_9x9(question);
@@ -384,6 +435,7 @@
 		}
 	});
 	$(document).ready(function(){
+		clearInterval(timer);
 		timer = setInterval(function(){
 			++second;
 			$('#minute').html(Math.floor(second / 60));
