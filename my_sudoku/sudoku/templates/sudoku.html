@@ -19,7 +19,8 @@
 	}
 	if (set != true){
 		level = "hard";
-		question = sudoku.generate(level);
+		//question = sudoku.generate(level);
+		new_game(level);
 	}
 	var choosed_cell_id = -1;
 	var current_sudoku = new Array();
@@ -237,21 +238,47 @@
 		use_solve = 0;
 		custom = 0;
 		level = l;
-		question = sudoku.generate(level);
-		draw_9x9();
-		set_9x9(question);
-		$('#level').html(level);
+		// question = sudoku.generate(level);
+		// draw_9x9();
+		// set_9x9(question);
+		// $('#level').html(level);
 
-		$(".input").attr({
-			"readonly":"readonly"
+		// $(".input").attr({
+		// 	"readonly":"readonly"
+		// });
+		// second = 0;
+		// clearInterval(timer);
+		// timer = setInterval(function(){
+		// 	++second;
+		// 	$('#minute').html(Math.floor(second / 60));
+		// 	$('#second').html(second % 60);
+		// }, 1000);
+
+		$.ajax({
+		  type: 'POST',
+		  url: "ajax/get_new_game/",
+		  data: JSON.stringify ({'level' : level}), // or JSON.stringify ({name: 'jonas'}),
+		  complete: function(d) {
+				d = eval("("+d.responseText+")");
+				question = d['sudoku'];
+				draw_9x9();
+				set_9x9(question);
+				$('#level').html(level);
+
+				$(".input").attr({
+					"readonly":"readonly"
+				});
+				second = 0;
+				clearInterval(timer);
+				timer = setInterval(function(){
+					++second;
+					$('#minute').html(Math.floor(second / 60));
+					$('#second').html(second % 60);
+				}, 1000);
+		  },
+		  contentType: "application/json",
+		  dataType: 'text'
 		});
-		second = 0;
-		clearInterval(timer);
-		timer = setInterval(function(){
-			++second;
-			$('#minute').html(Math.floor(second / 60));
-			$('#second').html(second % 60);
-		}, 1000);
 
 	}
 
@@ -392,8 +419,7 @@
         <button onclick="new_game('easy');" type="button" class="btn btn-primary" data-dismiss="modal">简单</button>
         <button onclick="new_game('medium');" type="button" class="btn btn-primary" data-dismiss="modal">中等</button>
         <button onclick="new_game('hard');" type="button" class="btn btn-primary" data-dismiss="modal">困难</button>
-        <button onclick="new_game('insane');" type="button" class="btn btn-primary" data-dismiss="modal">极难</button>
-        <button onclick="new_game('inhuman');" type="button" class="btn btn-primary" data-dismiss="modal">极限</button>
+        <button onclick="new_game('extreme');" type="button" class="btn btn-primary" data-dismiss="modal">极难</button>
         <button onclick="custom_game();" type="button" class="btn btn-primary" data-dismiss="modal">自定义</button>
 
       </div>
